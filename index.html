@@ -3,57 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CYBER MARKET + TG</title>
+<title>MOZGALOM CYBER MARKET</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <style>
-body { margin:0; font-family:sans-serif; background:#05070d; color:white; overflow-x:hidden; min-height:100vh; }
-.header { text-align:center; padding:20px; }
-.header h1 { margin:0; font-size:30px; color:#00ffe5; text-shadow:0 0 15px #00ffe5; }
-.user-tag { color:#ff00ff; font-size:12px; margin-top:5px; }
-.nav { display:flex; justify-content:center; flex-wrap:wrap; gap:5px; padding:10px; background:rgba(0,0,0,0.5); position:sticky; top:0; z-index:100; }
-button { background:linear-gradient(90deg,#00ffe5,#ff00ff); border:none; padding:10px; border-radius:8px; color:white; font-weight:bold; cursor:pointer; transition: 0.3s; }
-button:active { transform: scale(0.95); }
-.google-btn { background: white; color: #000; margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 8px; font-weight: bold; padding: 12px; }
-.page { display:none; padding:15px; padding-bottom:120px; }
+:root {
+    --neon-blue: #00ffe5;
+    --neon-purple: #ff00ff;
+    --dark-bg: #05070d;
+}
+
+body { 
+    margin:0; 
+    font-family: 'Segoe UI', Roboto, sans-serif; 
+    background: var(--dark-bg); 
+    color:white; 
+    overflow-x:hidden; 
+    min-height:100vh;
+}
+
+/* Соцсети в шапке */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+}
+.social-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 5px 12px;
+    border: 1px solid var(--neon-blue);
+    border-radius: 20px;
+    transition: 0.3s;
+}
+.social-links a:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+.header { text-align:center; padding:30px 20px; }
+.header h1 { 
+    margin:0; 
+    font-size:35px; 
+    color: var(--neon-blue); 
+    text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+    letter-spacing: 2px;
+}
+.user-tag { color: var(--neon-purple); font-size: 14px; margin-top: 5px; text-shadow: 0 0 5px var(--neon-purple); }
+
+.nav { 
+    display:flex; 
+    justify-content:center; 
+    flex-wrap:wrap; 
+    gap:8px; 
+    padding:15px; 
+    background: rgba(10, 15, 30, 0.8);
+    backdrop-filter: blur(10px);
+    position:sticky; 
+    top:0; 
+    z-index:100;
+    border-bottom: 1px solid rgba(0, 255, 229, 0.2);
+}
+
+button { 
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); 
+    border: none; 
+    padding: 12px 18px; 
+    border-radius: 10px; 
+    color: white; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: 0.2s all;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    text-transform: uppercase;
+    font-size: 12px;
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+button:active { transform: scale(0.92); }
+
+.page { display:none; padding:20px; padding-bottom:120px; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 .page.active { display:block; }
-.card { max-width:400px; margin:10px auto; padding:20px; background:rgba(20,25,40,0.9); border:1px solid #00ffe5; border-radius:12px; }
-input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #333; background:#000; color:white; box-sizing:border-box; }
-.toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:#00ffe5; color:#000; padding:10px 20px; border-radius:8px; font-weight:bold; z-index:1000; }
-.order { margin-top:10px; padding:12px; border:1px solid #333; border-left:3px solid #00ffe5; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; }
-.price-tag { font-size: 14px; color: #00ffe5; margin-bottom: 10px; display: block; font-weight: bold; }
-.status-wait { color: #ffae00; font-weight: bold; }
-.status-paid { color: #00ff00; font-weight: bold; }
-.order-date { font-size: 10px; color: #aaa; display: block; margin-top: 5px; }
-.cyberRain { position:fixed; top:-20px; color:#00ffe5; font-size:12px; pointer-events:none; z-index:-1; animation:fall linear forwards; }
+
+.card { 
+    max-width:400px; 
+    margin:15px auto; 
+    padding:25px; 
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 229, 0.3);
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: 0.3s;
+}
+.card:hover { border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 255, 229, 0.2); }
+
+input { 
+    width:100%; padding:14px; margin:10px 0; 
+    border-radius:10px; border:1px solid #333; 
+    background:rgba(0,0,0,0.7); color:white; box-sizing:border-box; 
+    outline: none;
+}
+input:focus { border-color: var(--neon-purple); box-shadow: 0 0 10px var(--neon-purple); }
+
+.price-tag { 
+    font-size: 18px; color: var(--neon-blue); 
+    margin: 15px 0; display: block; font-weight: bold;
+    text-shadow: 0 0 5px var(--neon-blue);
+}
+
+.order { 
+    margin-top:15px; padding:15px; 
+    border:1px solid rgba(255,255,255,0.1); 
+    border-left:4px solid var(--neon-blue); 
+    border-radius:10px; 
+    background:rgba(255,255,255,0.02); 
+}
+
+.status-paid { color: #00ff00; text-shadow: 0 0 10px #00ff00; font-weight: bold; }
+.status-wait { color: #ffae00; text-shadow: 0 0 10px #ffae00; font-weight: bold; }
+
+.cyberRain { position:fixed; top:-20px; color:var(--neon-blue); font-size:12px; pointer-events:none; z-index:-1; animation:fall linear forwards; opacity: 0.4; }
 @keyframes fall { to { transform:translateY(110vh); opacity:0; } }
+
+.google-btn { background: white; color: #000; margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; font-weight: bold; padding: 12px; }
 </style>
 </head>
 <body>
 
+<div class="social-links">
+    <a href="https://t.me/mozgalom" target="_blank">✈️ TG КАНАЛ</a>
+    <a href="https://www.tiktok.com/@mozgalomovich" target="_blank">🎵 TIKTOK</a>
+</div>
+
 <div class="header">
-    <h1>CYBER MARKET</h1>
-    <div class="user-tag">@mozgalomovich</div>
+    <h1>MOZGALOM MARKET</h1>
+    <div class="user-tag">CYBER SYSTEM 2.0</div>
 </div>
 
 <div class="nav">
-    <button onclick="show('auth')">АККАУНТ</button>
-    <button onclick="show('shop')">МАГАЗИН</button>
+    <button onclick="show('auth')">ВХОД</button>
+    <button onclick="show('shop')">ТОВАРЫ</button>
     <button onclick="show('cart')">КОРЗИНА</button>
-    <button onclick="show('history')">ИСТОРИЯ</button>
-    <button onclick="show('admin')">АДМИН</button>
+    <button onclick="show('history')">ЗАКАЗЫ</button>
+    <button onclick="show('admin')" style="background:none; border:1px solid var(--neon-purple); color:var(--neon-purple)">АДМИН</button>
 </div>
 
 <div id="auth" class="page active">
     <div class="card" id="authContent">
-        <h3>ВХОД / РЕГИСТРАЦИЯ</h3>
+        <h3>АВТОРИЗАЦИЯ</h3>
         <input id="u_mail" type="email" placeholder="Email">
         <input id="u_pass" type="password" placeholder="Пароль">
         <div style="display:flex; gap:10px;">
-            <button onclick="doReg()" style="flex:1">СОЗДАТЬ</button>
+            <button onclick="doReg()" style="flex:1">РЕГИСТРАЦИЯ</button>
             <button onclick="doLogin()" style="flex:1">ВОЙТИ</button>
         </div>
         <button class="google-btn" onclick="loginGoogle()">
@@ -64,19 +177,19 @@ input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px so
 
 <div id="shop" class="page">
     <div class="card">
-        <h3>1 неделя</h3>
+        <h3>1 НЕДЕЛЯ</h3>
         <span class="price-tag">300₽ / 4$ / 2 TON</span>
-        <button onclick="toCart('1 неделя','300₽ / 4$ / 2 TON')" style="width:100%">В КОРЗИНУ</button>
+        <button onclick="toCart('1 неделя','300₽ / 4$ / 2 TON')" style="width:100%">КУПИТЬ</button>
     </div>
     <div class="card">
-        <h3>1 месяц</h3>
+        <h3>1 МЕСЯЦ</h3>
         <span class="price-tag">1000₽ / 13$ / 6 TON</span>
-        <button onclick="toCart('1 месяц','1000₽ / 13$ / 6 TON')" style="width:100%">В КОРЗИНУ</button>
+        <button onclick="toCart('1 месяц','1000₽ / 13$ / 6 TON')" style="width:100%">КУПИТЬ</button>
     </div>
     <div class="card">
-        <h3>Навсегда</h3>
+        <h3>НАВСЕГДА</h3>
         <span class="price-tag">4000₽ / 52$ / 25 TON</span>
-        <button onclick="toCart('Навсегда','4000₽ / 52$ / 25 TON')" style="width:100%">В КОРЗИНУ</button>
+        <button onclick="toCart('Навсегда','4000₽ / 52$ / 25 TON')" style="width:100%">КУПИТЬ</button>
     </div>
 </div>
 
@@ -84,26 +197,23 @@ input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px so
     <div class="card">
         <h3>КОРЗИНА</h3>
         <div id="cartList">Пусто</div>
-        <div id="payArea" style="display:none; margin-top:15px; border-top:1px solid #333; padding-top:10px;">
-            <p style="font-size:12px; color:#00ffe5">Оплатите по реквизитам и оформите заказ:</p>
+        <div id="payArea" style="display:none; margin-top:20px; border-top:1px solid rgba(0,255,229,0.2); padding-top:15px;">
+            <p style="font-size:13px; color:var(--neon-blue)">Адрес для оплаты TON:</p>
             <input id="addr" value="UQAYHaet-WWovXy7HoH84ud8cz_VjENJAmuEySnVe9aiw2Dv" readonly>
-            <button onclick="copyW()" style="width:100%; margin-bottom:5px">КОПИРОВАТЬ TON АДРЕС</button>
+            <button onclick="copyW()" style="width:100%; background:var(--neon-blue); color:black">КОПИРОВАТЬ АДРЕС</button>
         </div>
     </div>
 </div>
 
 <div id="history" class="page">
-    <div class="card">
-        <h3>ИСТОРИЯ ЗАКАЗОВ</h3>
-        <div id="h_list">Загрузка данных...</div>
-    </div>
+    <div class="card"><h3>ИСТОРИЯ ЗАКАЗОВ</h3><div id="h_list">Загрузка...</div></div>
 </div>
 
 <div id="admin" class="page">
     <div class="card">
-        <h3>АДМИН-ПАНЕЛЬ</h3>
+        <h3>ADMIN ACCESS</h3>
         <div id="a_lock">
-            <input id="a_pass" type="password" placeholder="Пароль админа">
+            <input id="a_pass" type="password" placeholder="Пароль">
             <button onclick="goAdmin()" style="width:100%">ВОЙТИ</button>
         </div>
         <div id="a_panel" style="display:none;"><div id="all_orders"></div></div>
@@ -111,11 +221,9 @@ input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px so
 </div>
 
 <script>
-// ТВОИ ДАННЫЕ TELEGRAM
 const TG_TOKEN = "8538869779:AAGSu2F22Tx0TAtRH2gXPlF4ZNsPVKTt3lw";
 const TG_CHAT_ID = "7910835075";
 
-// Конфигурация Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyD94vjwnRQIYC-2Le_nmxtsVKlU6Oww6VE",
     authDomain: "mozgalom-site.firebaseapp.com",
@@ -133,49 +241,39 @@ function show(id) {
     document.getElementById(id).classList.add('active'); 
 }
 
-function msg(t) { 
-    const d=document.createElement("div"); d.className="toast"; d.innerText=t; 
-    document.body.appendChild(d); setTimeout(()=>d.remove(),2500); 
-}
-
-// Отправка в Telegram
 function sendToTG(text) {
     const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}`;
-    fetch(url).catch(e => console.error("Ошибка TG:", e));
+    fetch(url, {mode:'no-cors'});
 }
 
-// АВТОРИЗАЦИЯ
 function loginGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).then(()=>location.reload()).catch(e=>alert("Ошибка: Убедитесь, что домен добавлен в Firebase Console!"));
+    auth.signInWithPopup(provider).then(()=>location.reload());
 }
 
 function doReg() {
     const e = document.getElementById("u_mail").value, p = document.getElementById("u_pass").value;
-    auth.createUserWithEmailAndPassword(e,p).then(()=>location.reload()).catch(err=>msg(err.message));
+    auth.createUserWithEmailAndPassword(e,p).then(()=>location.reload());
 }
 function doLogin() {
     const e = document.getElementById("u_mail").value, p = document.getElementById("u_pass").value;
-    auth.signInWithEmailAndPassword(e,p).then(()=>location.reload()).catch(()=>msg("Ошибка входа"));
+    auth.signInWithEmailAndPassword(e,p).then(()=>location.reload());
 }
 
-// ЛОГИКА МАГАЗИНА
 let basket = [];
-function toCart(n,pr) { basket.push({n,pr}); msg("Добавлено в корзину"); drawCart(); }
+function toCart(n,pr) { basket.push({n,pr}); drawCart(); show('cart'); }
 function drawCart() {
     const b = document.getElementById("cartList"), p = document.getElementById("payArea");
     if(!basket.length) { b.innerHTML="Пусто"; p.style.display="none"; return; }
     p.style.display="block";
     b.innerHTML = basket.map((x,i)=>`
-        <div class="order">
-            <b>${x.n}</b><br><small>${x.pr}</small><br>
-            <button onclick="sendOrder('${x.n}','${x.pr}',${i})" style="margin-top:8px; background:#00ffe5; color:#000;">ОФОРМИТЬ ЗАКАЗ</button>
-        </div>
+        <div class="order"><b>${x.n}</b><br><small>${x.pr}</small><br>
+        <button onclick="sendOrder('${x.n}','${x.pr}',${i})" style="margin-top:10px; width:100%">ОФОРМИТЬ</button></div>
     `).join("");
 }
 
 function sendOrder(n, pr, i) {
-    if(!auth.currentUser) return msg("Сначала войдите в аккаунт!");
+    if(!auth.currentUser) return alert("Войдите в аккаунт!");
     const code = "CB-" + Math.random().toString(36).substr(2,7).toUpperCase();
     db.collection("orders").add({
         uid: auth.currentUser.uid,
@@ -186,43 +284,29 @@ function sendOrder(n, pr, i) {
         status: "pending",
         time: Date.now()
     }).then(() => {
-        // УВЕДОМЛЕНИЕ В ТЕЛЕГРАМ ТЕБЕ
-        const text = `🚀 НОВЫЙ ЗАКАЗ!\n\nТовар: ${n}\nЦена: ${pr}\nEmail: ${auth.currentUser.email}\nКод: ${code}`;
-        sendToTG(text);
-
-        alert("Заказ оформлен! Код: "+code);
+        sendToTG(`🚀 НОВЫЙ ЗАКАЗ!\nТовар: ${n}\nEmail: ${auth.currentUser.email}\nКод: ${code}`);
+        alert("Заказ создан! Код: "+code);
         basket.splice(i,1); drawCart(); show('history');
     });
 }
 
-// МОНИТОРИНГ
 auth.onAuthStateChanged(u => {
     const h = document.getElementById("h_list");
     if(u) {
-        document.getElementById("authContent").innerHTML = `<h3>АККАУНТ</h3><p>${u.email}</p><button onclick="auth.signOut().then(()=>location.reload())" style="width:100%">ВЫЙТИ</button>`;
+        document.getElementById("authContent").innerHTML = `<h3>ПРОФИЛЬ</h3><p>${u.email}</p><button onclick="auth.signOut().then(()=>location.reload())" style="width:100%">ВЫЙТИ</button>`;
         db.collection("orders").where("uid","==",u.uid).onSnapshot(s => {
-            if(s.empty) return h.innerHTML = "Заказов пока нет.";
+            if(s.empty) return h.innerHTML = "Заказов нет.";
             h.innerHTML = s.docs.map(d => {
                 const x = d.data();
                 const isPaid = x.status === 'paid';
-                return `
-                <div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}" onclick="checkPaid('${x.status}', '${x.code}')">
-                    <b>${x.product}</b> (${x.price})<br>
-                    <span class="order-date">${new Date(x.time).toLocaleString()}</span>
-                    Код: <span style="color:#00ffe5">${x.code}</span><br>
-                    Статус: <span class="${isPaid?'status-paid':'status-wait'}">${isPaid?'ОПЛАЧЕНО ✅':'В ОЖИДАНИИ ⏳'}</span>
-                </div>`;
+                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}">
+                    <b>${x.product}</b><br>Статус: <span class="${isPaid?'status-paid':'status-wait'}">${isPaid?'ОПЛАЧЕНО ✅':'ОЖИДАНИЕ ⏳'}</span><br>
+                    <small>Код: ${x.code}</small></div>`;
             }).join("");
         });
-    } else { h.innerHTML = "Войдите в аккаунт"; }
+    } else { h.innerHTML = "Войдите, чтобы видеть заказы"; }
 });
 
-function checkPaid(status, code) {
-    if(status === 'paid') alert("ОПЛАЧЕНО! Код заказа: " + code);
-    else msg("Ожидайте подтверждения оплаты админом");
-}
-
-// АДМИНКА
 function goAdmin() {
     if(document.getElementById("a_pass").value === "rahim_45_pro") {
         document.getElementById("a_lock").style.display="none";
@@ -231,22 +315,18 @@ function goAdmin() {
             document.getElementById("all_orders").innerHTML = s.docs.map(d => {
                 const x = d.data();
                 const isPaid = x.status === 'paid';
-                return `
-                <div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}; font-size:12px">
-                    ${x.email}<br><b>${x.product}</b> [${x.price}]<br>
-                    Код: <b>${x.code}</b><br>
-                    Статус: <b style="color:${isPaid?'#0f0':'#ffae00'}">${isPaid?'ОПЛАЧЕН':'НОВЫЙ'}</b><br>
-                    ${!isPaid ? `<button onclick="db.collection('orders').doc('${d.id}').update({status:'paid'})">ПОДТВЕРДИТЬ</button>` : ''}
-                    <button onclick="db.collection('orders').doc('${d.id}').delete()" style="background:red">УДАЛИТЬ</button>
+                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}">
+                    ${x.email}<br><b>${x.product}</b><br>
+                    Статус: <b>${isPaid?'ОПЛАЧЕН':'НОВЫЙ'}</b><br>
+                    ${!isPaid ? `<button onclick="db.collection('orders').doc('${d.id}').update({status:'paid'})">ОПЛАТА ПОЛУЧЕНА</button>` : ''}
                 </div>`;
             }).join("");
         });
-    } else msg("Неверный пароль!");
+    }
 }
 
-function copyW() { const i=document.getElementById("addr"); i.select(); navigator.clipboard.writeText(i.value); msg("Скопировано"); }
+function copyW() { const i=document.getElementById("addr"); i.select(); navigator.clipboard.writeText(i.value); alert("Скопировано!"); }
 
-// ФОН
 setInterval(()=>{
     const r=document.createElement("div"); r.className="cyberRain"; r.innerText="01";
     r.style.left=Math.random()*100+"vw"; r.style.animationDuration=(2+Math.random()*3)+"s";
