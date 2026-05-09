@@ -3,226 +3,241 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bio mozgalom</title>
+<title>CYBER MARKET + TG</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Segoe UI, sans-serif;
-}
-
-body{
-min-height:100vh;
-overflow-y:auto;
-background: radial-gradient(circle at top,#14142a,#0b0b0f 60%,#050508);
-color:white;
-text-align:center;
-}
-
-.top{
-padding:20px;
-font-weight:bold;
-font-size:18px;
-color:#00ffcc;
-}
-
-h1{
-margin-top:20px;
-font-size:40px;
-background:linear-gradient(90deg,#00ffcc,#5f9cff);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-}
-
-.sub{
-color:#888;
-margin-top:5px;
-}
-
-.socials{
-margin:20px 0;
-}
-
-.socials a{
-display:inline-block;
-margin:8px;
-padding:10px 15px;
-border-radius:10px;
-background:#111118;
-color:#00ffcc;
-text-decoration:none;
-border:1px solid rgba(0,255,200,0.2);
-}
-
-.container{
-padding:20px;
-}
-
-.card{
-background:#111118;
-width:300px;
-margin:15px auto;
-padding:20px;
-border-radius:14px;
-}
-
-button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-background:linear-gradient(90deg,#00ffcc,#5f9cff);
-cursor:pointer;
-font-weight:bold;
-}
-
-.page{
-display:none;
-padding:20px;
-}
-
-.address{
-background:#1a1a22;
-padding:12px;
-border-radius:10px;
-margin:15px auto;
-width:320px;
-word-break:break-all;
-cursor:pointer;
-}
-
-.manager{
-margin-top:15px;
-color:#ccc;
-font-size:14px;
-line-height:1.4;
-}
-
-.back{
-color:#00ffcc;
-cursor:pointer;
-margin-top:15px;
-display:inline-block;
-}
-
-.toast{
-position:fixed;
-bottom:30px;
-left:50%;
-transform:translateX(-50%);
-background:rgba(0,255,200,0.15);
-border:1px solid rgba(0,255,200,0.4);
-color:#00ffcc;
-padding:10px 20px;
-border-radius:10px;
-opacity:0;
-transition:0.4s;
-pointer-events:none;
-}
-
-.toast.show{
-opacity:1;
-transform:translateX(-50%) translateY(-10px);
-}
-
-.bottom{
-padding:20px;
-font-size:12px;
-color:#777;
-line-height:1.4;
-}
+body { margin:0; font-family:sans-serif; background:#05070d; color:white; overflow-x:hidden; min-height:100vh; }
+.header { text-align:center; padding:20px; }
+.header h1 { margin:0; font-size:30px; color:#00ffe5; text-shadow:0 0 15px #00ffe5; }
+.user-tag { color:#ff00ff; font-size:12px; margin-top:5px; }
+.nav { display:flex; justify-content:center; flex-wrap:wrap; gap:5px; padding:10px; background:rgba(0,0,0,0.5); position:sticky; top:0; z-index:100; }
+button { background:linear-gradient(90deg,#00ffe5,#ff00ff); border:none; padding:10px; border-radius:8px; color:white; font-weight:bold; cursor:pointer; transition: 0.3s; }
+button:active { transform: scale(0.95); }
+.google-btn { background: white; color: #000; margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 8px; font-weight: bold; padding: 12px; }
+.page { display:none; padding:15px; padding-bottom:120px; }
+.page.active { display:block; }
+.card { max-width:400px; margin:10px auto; padding:20px; background:rgba(20,25,40,0.9); border:1px solid #00ffe5; border-radius:12px; }
+input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #333; background:#000; color:white; box-sizing:border-box; }
+.toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:#00ffe5; color:#000; padding:10px 20px; border-radius:8px; font-weight:bold; z-index:1000; }
+.order { margin-top:10px; padding:12px; border:1px solid #333; border-left:3px solid #00ffe5; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; }
+.price-tag { font-size: 14px; color: #00ffe5; margin-bottom: 10px; display: block; font-weight: bold; }
+.order-date { font-size: 10px; color: #aaa; display: block; margin-top: 5px; }
+.status-wait { color: #ffae00; font-weight: bold; }
+.status-paid { color: #00ff00; font-weight: bold; }
+.cyberRain { position:fixed; top:-20px; color:#00ffe5; font-size:12px; pointer-events:none; z-index:-1; animation:fall linear forwards; }
+@keyframes fall { to { transform:translateY(110vh); opacity:0; } }
 </style>
 </head>
-
 <body>
 
-<div class="top">@mozgalomovich</div>
-
-<h1>Bio mozgalom</h1>
-<p class="sub">выбор тарифа</p>
-
-<div class="socials">
-<a href="https://www.tiktok.com/@mozgalomovich" target="_blank">TikTok</a>
-<a href="https://t.me/bio_mozgalom" target="_blank">Telegram</a>
+<div class="header">
+    <h1>CYBER MARKET</h1>
+    <div class="user-tag">@mozgalomovich</div>
 </div>
 
-<div id="home">
-<div class="container">
-
-<div class="card">
-<h3>1 неделя</h3>
-<p>300₽</p>
-<button onclick="openPay()">купить</button>
+<div class="nav">
+    <button onclick="show('auth')">АККАУНТ</button>
+    <button onclick="show('shop')">МАГАЗИН</button>
+    <button onclick="show('cart')">КОРЗИНА</button>
+    <button onclick="show('history')">ИСТОРИЯ</button>
+    <button onclick="show('admin')">АДМИН</button>
 </div>
 
-<div class="card">
-<h3>1 месяц</h3>
-<p>1000₽</p>
-<button onclick="openPay()">купить</button>
+<div id="auth" class="page active">
+    <div class="card" id="authContent">
+        <h3>ВХОД / РЕГИСТРАЦИЯ</h3>
+        <input id="u_mail" type="email" placeholder="Email">
+        <input id="u_pass" type="password" placeholder="Пароль">
+        <div style="display:flex; gap:10px;">
+            <button onclick="doReg()" style="flex:1">СОЗДАТЬ</button>
+            <button onclick="doLogin()" style="flex:1">ВОЙТИ</button>
+        </div>
+        <button class="google-btn" onclick="loginGoogle()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Войти через Google
+        </button>
+    </div>
 </div>
 
-<div class="card">
-<h3>навсегда</h3>
-<p>4000₽</p>
-<button onclick="openPay()">купить</button>
+<div id="shop" class="page">
+    <div class="card">
+        <h3>1 неделя</h3>
+        <span class="price-tag">300₽ / 4$ / 2 TON</span>
+        <button onclick="toCart('1 неделя','300₽ / 4$ / 2 TON')" style="width:100%">В КОРЗИНУ</button>
+    </div>
+    <div class="card">
+        <h3>1 месяц</h3>
+        <span class="price-tag">1000₽ / 13$ / 6 TON</span>
+        <button onclick="toCart('1 месяц','1000₽ / 13$ / 6 TON')" style="width:100%">В КОРЗИНУ</button>
+    </div>
+    <div class="card">
+        <h3>Навсегда</h3>
+        <span class="price-tag">4000₽ / 52$ / 25 TON</span>
+        <button onclick="toCart('Навсегда','4000₽ / 52$ / 25 TON')" style="width:100%">В КОРЗИНУ</button>
+    </div>
 </div>
 
-</div>
-</div>
-
-<div id="pay" class="page">
-
-<h2 style="color:#00ffcc;">TON оплата</h2>
-
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=UQAYHaet-WWovXy7HoH84ud8cz_VjENJAmuEySnVe9aiw2Dv">
-
-<div class="manager">
-Напишите нашему менеджеру <b>@mozgalomovich</b> в Telegram и скиньте ему чек / фото подтверждение оплаты
-</div>
-
-<div class="address" onclick="copy()">
-UQAYHaet-WWovXy7HoH84ud8cz_VjENJAmuEySnVe9aiw2Dv
+<div id="cart" class="page">
+    <div class="card">
+        <h3>КОРЗИНА</h3>
+        <div id="cartList">Пусто</div>
+        <div id="payArea" style="display:none; margin-top:15px; border-top:1px solid #333; padding-top:10px;">
+            <p style="font-size:12px; color:#00ffe5">Оплатите TON и оформите заказ:</p>
+            <input id="addr" value="UQAYHaet-WWovXy7HoH84ud8cz_VjENJAmuEySnVe9aiw2Dv" readonly>
+            <button onclick="copyW()" style="width:100%; margin-bottom:5px">КОПИРОВАТЬ АДРЕС</button>
+        </div>
+    </div>
 </div>
 
-<button onclick="copy()">скопировать адрес</button>
-
-<div class="back" onclick="back()">← назад</div>
-
+<div id="history" class="page">
+    <div class="card"><h3>ИСТОРИЯ ЗАКАЗОВ</h3><div id="h_list">Загрузка...</div></div>
 </div>
 
-<div id="toast" class="toast">Скопировано ✔</div>
-
-<div class="bottom">
-мы являемся командой <b>fullter</b> и гарантируем корректную обработку платежей
+<div id="admin" class="page">
+    <div class="card">
+        <h3>АДМИН-ПАНЕЛЬ</h3>
+        <div id="a_lock">
+            <input id="a_pass" type="password" placeholder="Пароль админа">
+            <button onclick="goAdmin()" style="width:100%">ВОЙТИ</button>
+        </div>
+        <div id="a_panel" style="display:none;"><div id="all_orders"></div></div>
+    </div>
 </div>
 
 <script>
+// ТВОИ ДАННЫЕ ТЕЛЕГРАМ
+const TG_TOKEN = "8538869779:AAGSu2F22Tx0TAtRH2gXPlF4ZNsPVKTt3lw";
+const TG_CHAT_ID = "7910835075";
 
-function openPay(){
-document.getElementById("home").style.display="none";
-document.getElementById("pay").style.display="block";
+const firebaseConfig = {
+    apiKey: "AIzaSyD94vjwnRQIYC-2Le_nmxtsVKlU6Oww6VE",
+    authDomain: "mozgalom-site.firebaseapp.com",
+    projectId: "mozgalom-site",
+    storageBucket: "mozgalom-site.appspot.com",
+    appId: "1:564649897907:web:61503121e661fb6a82a5c6"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+function show(id) { 
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); 
+    document.getElementById(id).classList.add('active'); 
 }
 
-function back(){
-document.getElementById("pay").style.display="none";
-document.getElementById("home").style.display="block";
+function msg(t) { 
+    const d=document.createElement("div"); d.className="toast"; d.innerText=t; 
+    document.body.appendChild(d); setTimeout(()=>d.remove(),2500); 
 }
 
-function copy(){
-navigator.clipboard.writeText("UQAYHaet-WWovXy7HoH84ud8cz_VjENJAmuEySnVe9aiw2Dv");
-
-let t=document.getElementById("toast");
-t.classList.add("show");
-
-setTimeout(()=>{
-t.classList.remove("show");
-},1500);
+// Отправка уведомления в Telegram
+function sendToTG(text) {
+    const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}`;
+    fetch(url).catch(e => console.error("Ошибка TG:", e));
 }
 
+function loginGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).then(()=>location.reload()).catch(e=>alert("Ошибка входа через Google. Добавьте домен в консоли!"));
+}
+
+function doReg() {
+    const e = document.getElementById("u_mail").value, p = document.getElementById("u_pass").value;
+    auth.createUserWithEmailAndPassword(e,p).then(()=>location.reload()).catch(err=>msg(err.message));
+}
+function doLogin() {
+    const e = document.getElementById("u_mail").value, p = document.getElementById("u_pass").value;
+    auth.signInWithEmailAndPassword(e,p).then(()=>location.reload()).catch(()=>msg("Ошибка входа"));
+}
+
+let basket = [];
+function toCart(n,pr) { basket.push({n,pr}); msg("Добавлено"); drawCart(); }
+function drawCart() {
+    const b = document.getElementById("cartList"), p = document.getElementById("payArea");
+    if(!basket.length) { b.innerHTML="Пусто"; p.style.display="none"; return; }
+    p.style.display="block";
+    b.innerHTML = basket.map((x,i)=>`
+        <div class="order"><b>${x.n}</b><br><small>${x.pr}</small><br>
+        <button onclick="sendOrder('${x.n}','${x.pr}',${i})" style="margin-top:8px; background:#00ffe5; color:#000;">ОФОРМИТЬ</button></div>
+    `).join("");
+}
+
+function sendOrder(n, pr, i) {
+    if(!auth.currentUser) return msg("Войдите!");
+    const code = "CB-" + Math.random().toString(36).substr(2,7).toUpperCase();
+    db.collection("orders").add({
+        uid: auth.currentUser.uid,
+        email: auth.currentUser.email,
+        product: n,
+        price: pr,
+        code: code,
+        status: "pending",
+        time: Date.now()
+    }).then(() => {
+        // УВЕДОМЛЕНИЕ В ТВОЙ ТЕЛЕГРАМ
+        const text = `🚀 НОВЫЙ ЗАКАЗ!\n\nТовар: ${n}\nЦена: ${pr}\nEmail: ${auth.currentUser.email}\nКод: ${code}`;
+        sendToTG(text);
+
+        alert("Заказ создан! Код: "+code + "\nУведомление отправлено админу.");
+        basket.splice(i,1); drawCart(); show('history');
+    });
+}
+
+auth.onAuthStateChanged(u => {
+    const h = document.getElementById("h_list");
+    if(u) {
+        document.getElementById("authContent").innerHTML = `<h3>АККАУНТ</h3><p>${u.email}</p><button onclick="auth.signOut().then(()=>location.reload())" style="width:100%">ВЫЙТИ</button>`;
+        db.collection("orders").where("uid","==",u.uid).onSnapshot(s => {
+            if(s.empty) return h.innerHTML = "Заказов нет.";
+            h.innerHTML = s.docs.map(d => {
+                const x = d.data();
+                const isPaid = x.status === 'paid';
+                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}" onclick="checkPaid('${x.status}', '${x.code}')">
+                    <b>${x.product}</b><br><small>${x.price}</small><br>
+                    <span class="order-date">${new Date(x.time).toLocaleString()}</span>
+                    Код: ${x.code}<br>
+                    Статус: <span class="${isPaid?'status-paid':'status-wait'}">${isPaid?'ОПЛАЧЕНО ✅':'ОЖИДАНИЕ ⏳'}</span></div>`;
+            }).join("");
+        });
+    } else { h.innerHTML = "Войдите в аккаунт"; }
+});
+
+function checkPaid(status, code) {
+    if(status === 'paid') alert("ОПЛАЧЕНО! Скиньте код @mozgalomovich: " + code);
+    else msg("Ждем оплаты");
+}
+
+function goAdmin() {
+    if(document.getElementById("a_pass").value === "rahim_45_pro") {
+        document.getElementById("a_lock").style.display="none";
+        document.getElementById("a_panel").style.display="block";
+        db.collection("orders").orderBy("time","desc").onSnapshot(s => {
+            document.getElementById("all_orders").innerHTML = s.docs.map(d => {
+                const x = d.data();
+                const isPaid = x.status === 'paid';
+                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}; font-size:12px">
+                    ${x.email}<br><b>${x.product}</b> [${x.price}]<br>
+                    Статус: <b style="color:${isPaid?'#0f0':'#ffae00'}">${isPaid?'ОПЛАЧЕН':'НОВЫЙ'}</b><br>
+                    Код: <b>${x.code}</b><br>
+                    ${!isPaid ? `<button onclick="db.collection('orders').doc('${d.id}').update({status:'paid'})">ПОДТВЕРДИТЬ</button>` : ''}
+                    <button onclick="db.collection('orders').doc('${d.id}').delete()" style="background:red">УДАЛИТЬ</button>
+                </div>`;
+            }).join("");
+        });
+    } else msg("Пароль!");
+}
+
+function copyW() { const i=document.getElementById("addr"); i.select(); navigator.clipboard.writeText(i.value); msg("Скопировано"); }
+
+setInterval(()=>{
+    const r=document.createElement("div"); r.className="cyberRain"; r.innerText="01";
+    r.style.left=Math.random()*100+"vw"; r.style.animationDuration=(2+Math.random()*3)+"s";
+    document.body.appendChild(r); setTimeout(()=>r.remove(),4000);
+},200);
 </script>
-
 </body>
 </html>
