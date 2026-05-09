@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOZGALOM CYBER MARKET</title>
+<title>MOZGALOM CYBER MARKET 2.0</title>
 
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -14,211 +15,146 @@
     --neon-blue: #00ffe5;
     --neon-purple: #ff00ff;
     --dark-bg: #05070d;
+    --glass: rgba(255, 255, 255, 0.05);
 }
 
 body { 
-    margin:0; 
-    font-family: 'Segoe UI', Roboto, sans-serif; 
-    background: var(--dark-bg); 
-    color:white; 
-    overflow-x:hidden; 
-    min-height:100vh;
+    margin:0; font-family: 'Lexend', sans-serif; background: var(--dark-bg); color:white; 
+    overflow-x:hidden; display: flex; flex-direction: column; min-height: 100vh;
 }
 
-/* Соцсети в шапке */
-.social-links {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    padding: 10px;
-    background: rgba(0,0,0,0.3);
-}
-.social-links a {
-    text-decoration: none;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 5px 12px;
-    border: 1px solid var(--neon-blue);
-    border-radius: 20px;
-    transition: 0.3s;
-}
-.social-links a:hover {
-    background: var(--neon-blue);
-    color: black;
-    box-shadow: 0 0 15px var(--neon-blue);
-}
-
-.header { text-align:center; padding:30px 20px; }
+/* ГЛАВНАЯ ШАПКА */
+.header { text-align:center; padding:50px 20px 20px; }
 .header h1 { 
-    margin:0; 
-    font-size:35px; 
-    color: var(--neon-blue); 
-    text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
-    letter-spacing: 2px;
+    margin:0; font-size:42px; color: var(--neon-blue); 
+    text-shadow: 0 0 20px var(--neon-blue); text-transform: uppercase; letter-spacing: 5px;
 }
-.user-tag { color: var(--neon-purple); font-size: 14px; margin-top: 5px; text-shadow: 0 0 5px var(--neon-purple); }
 
 .nav { 
-    display:flex; 
-    justify-content:center; 
-    flex-wrap:wrap; 
-    gap:8px; 
-    padding:15px; 
-    background: rgba(10, 15, 30, 0.8);
-    backdrop-filter: blur(10px);
-    position:sticky; 
-    top:0; 
-    z-index:100;
-    border-bottom: 1px solid rgba(0, 255, 229, 0.2);
+    display:flex; justify-content:center; gap:10px; padding:15px; 
+    background: rgba(10, 15, 30, 0.9); position:sticky; top:0; z-index:100;
+    backdrop-filter: blur(15px); border-bottom: 1px solid var(--neon-blue);
 }
 
 button { 
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); 
-    border: none; 
-    padding: 12px 18px; 
-    border-radius: 10px; 
-    color: white; 
-    font-weight: bold; 
-    cursor: pointer; 
-    transition: 0.2s all;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    text-transform: uppercase;
-    font-size: 12px;
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)); 
+    border: none; padding: 12px 24px; border-radius: 12px; 
+    color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5); text-transform: uppercase;
 }
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px var(--neon-blue);
-}
-button:active { transform: scale(0.92); }
+button:hover { transform: translateY(-3px); box-shadow: 0 0 25px var(--neon-blue); }
+button:active { transform: scale(0.95); }
 
-.page { display:none; padding:20px; padding-bottom:120px; animation: fadeIn 0.4s ease; }
-@keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+/* КОНТЕНТ */
+.page { display:none; padding:20px; flex: 1; animation: slideIn 0.4s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 .page.active { display:block; }
 
 .card { 
-    max-width:400px; 
-    margin:15px auto; 
-    padding:25px; 
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(0, 255, 229, 0.3);
-    border-radius: 16px;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    transition: 0.3s;
+    max-width:450px; margin:20px auto; padding:30px; 
+    background: var(--glass); border: 1px solid rgba(0, 255, 229, 0.2);
+    border-radius: 24px; backdrop-filter: blur(10px); position: relative;
 }
-.card:hover { border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 255, 229, 0.2); }
+
+.stock-tag {
+    position: absolute; top: 15px; right: 15px; background: rgba(255, 0, 0, 0.2);
+    color: #ff4444; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold;
+}
 
 input { 
-    width:100%; padding:14px; margin:10px 0; 
-    border-radius:10px; border:1px solid #333; 
-    background:rgba(0,0,0,0.7); color:white; box-sizing:border-box; 
-    outline: none;
+    width:100%; padding:15px; margin:10px 0; border-radius:12px; border:1px solid #333; 
+    background:rgba(0,0,0,0.6); color:white; font-size: 16px;
 }
-input:focus { border-color: var(--neon-purple); box-shadow: 0 0 10px var(--neon-purple); }
+input:focus { border-color: var(--neon-purple); box-shadow: 0 0 15px var(--neon-purple); outline: none; }
 
-.price-tag { 
-    font-size: 18px; color: var(--neon-blue); 
-    margin: 15px 0; display: block; font-weight: bold;
-    text-shadow: 0 0 5px var(--neon-blue);
+.price-tag { font-size: 24px; color: var(--neon-blue); font-weight: 900; margin: 15px 0; text-shadow: 0 0 10px var(--neon-blue); }
+
+/* ФУТЕР (Твои ссылки здесь) */
+footer {
+    background: rgba(0, 0, 0, 0.9); padding: 40px 20px; text-align: center;
+    border-top: 1px solid var(--neon-purple); margin-top: 50px;
 }
-
-.order { 
-    margin-top:15px; padding:15px; 
-    border:1px solid rgba(255,255,255,0.1); 
-    border-left:4px solid var(--neon-blue); 
-    border-radius:10px; 
-    background:rgba(255,255,255,0.02); 
+.footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+.footer-links a {
+    color: white; text-decoration: none; font-weight: bold; font-size: 14px;
+    padding: 12px 25px; border: 1px solid var(--neon-purple); border-radius: 50px;
+    transition: 0.3s; box-shadow: 0 0 10px var(--neon-purple);
 }
+.footer-links a:hover { background: var(--neon-purple); box-shadow: 0 0 30px var(--neon-purple); color: black; }
 
-.status-paid { color: #00ff00; text-shadow: 0 0 10px #00ff00; font-weight: bold; }
-.status-wait { color: #ffae00; text-shadow: 0 0 10px #ffae00; font-weight: bold; }
-
-.cyberRain { position:fixed; top:-20px; color:var(--neon-blue); font-size:12px; pointer-events:none; z-index:-1; animation:fall linear forwards; opacity: 0.4; }
+/* ЭФФЕКТ МАТРИЦЫ */
+.cyberRain { position:fixed; top:-20px; color:var(--neon-blue); font-size:12px; pointer-events:none; z-index:-1; animation:fall linear forwards; opacity: 0.2; }
 @keyframes fall { to { transform:translateY(110vh); opacity:0; } }
-
-.google-btn { background: white; color: #000; margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; font-weight: bold; padding: 12px; }
 </style>
 </head>
 <body>
 
-<div class="social-links">
-    <a href="https://t.me/mozgalom" target="_blank">✈️ TG КАНАЛ</a>
-    <a href="https://www.tiktok.com/@mozgalomovich" target="_blank">🎵 TIKTOK</a>
-</div>
-
 <div class="header">
-    <h1>MOZGALOM MARKET</h1>
-    <div class="user-tag">CYBER SYSTEM 2.0</div>
+    <h1>MOZGALOM</h1>
+    <div style="color:var(--neon-purple); letter-spacing: 3px;">SYSTEM UPGRADE 2.0</div>
 </div>
 
 <div class="nav">
-    <button onclick="show('auth')">ВХОД</button>
-    <button onclick="show('shop')">ТОВАРЫ</button>
-    <button onclick="show('cart')">КОРЗИНА</button>
+    <button onclick="show('shop')">МАРКЕТ</button>
+    <button onclick="show('auth')">ПРОФИЛЬ</button>
     <button onclick="show('history')">ЗАКАЗЫ</button>
-    <button onclick="show('admin')" style="background:none; border:1px solid var(--neon-purple); color:var(--neon-purple)">АДМИН</button>
+    <button onclick="show('admin')" style="background:none; border:1px solid var(--neon-purple); color:var(--neon-purple)">ADMIN</button>
 </div>
 
-<div id="auth" class="page active">
+<!-- ТОВАРЫ -->
+<div id="shop" class="page active">
+    <div class="card">
+        <div class="stock-tag">ОСТАЛОСЬ: 4 ШТ.</div>
+        <h3>1 НЕДЕЛЯ (LITE)</h3>
+        <div class="price-tag">300₽ / 2 TON</div>
+        <button onclick="buy('1 НЕДЕЛЯ','300₽')" style="width:100%">КУПИТЬ</button>
+    </div>
+    <div class="card">
+        <div class="stock-tag">ОСТАЛОСЬ: 2 ШТ.</div>
+        <h3>1 МЕСЯЦ (PRO)</h3>
+        <div class="price-tag">1000₽ / 6 TON</div>
+        <button onclick="buy('1 МЕСЯЦ','1000₽')" style="width:100%">КУПИТЬ</button>
+    </div>
+</div>
+
+<!-- ПРОФИЛЬ -->
+<div id="auth" class="page">
     <div class="card" id="authContent">
-        <h3>АВТОРИЗАЦИЯ</h3>
+        <h3>ВХОД В СИСТЕМУ</h3>
         <input id="u_mail" type="email" placeholder="Email">
         <input id="u_pass" type="password" placeholder="Пароль">
-        <div style="display:flex; gap:10px;">
-            <button onclick="doReg()" style="flex:1">РЕГИСТРАЦИЯ</button>
-            <button onclick="doLogin()" style="flex:1">ВОЙТИ</button>
-        </div>
-        <button class="google-btn" onclick="loginGoogle()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Войти через Google
-        </button>
+        <button onclick="doLogin()" style="width:100%">ВОЙТИ</button>
+        <button onclick="loginGoogle()" style="width:100%; margin-top:15px; background:white; color:black">GOOGLE LOGIN</button>
     </div>
 </div>
 
-<div id="shop" class="page">
-    <div class="card">
-        <h3>1 НЕДЕЛЯ</h3>
-        <span class="price-tag">300₽ / 4$ / 2 TON</span>
-        <button onclick="toCart('1 неделя','300₽ / 4$ / 2 TON')" style="width:100%">КУПИТЬ</button>
-    </div>
-    <div class="card">
-        <h3>1 МЕСЯЦ</h3>
-        <span class="price-tag">1000₽ / 13$ / 6 TON</span>
-        <button onclick="toCart('1 месяц','1000₽ / 13$ / 6 TON')" style="width:100%">КУПИТЬ</button>
-    </div>
-    <div class="card">
-        <h3>НАВСЕГДА</h3>
-        <span class="price-tag">4000₽ / 52$ / 25 TON</span>
-        <button onclick="toCart('Навсегда','4000₽ / 52$ / 25 TON')" style="width:100%">КУПИТЬ</button>
-    </div>
-</div>
-
-<div id="cart" class="page">
-    <div class="card">
-        <h3>КОРЗИНА</h3>
-        <div id="cartList">Пусто</div>
-        <div id="payArea" style="display:none; margin-top:20px; border-top:1px solid rgba(0,255,229,0.2); padding-top:15px;">
-            <p style="font-size:13px; color:var(--neon-blue)">Адрес для оплаты TON:</p>
-            <input id="addr" value="UQAYHaet-WWovXy7HoH84ud8cz_VjENJAmuEySnVe9aiw2Dv" readonly>
-            <button onclick="copyW()" style="width:100%; background:var(--neon-blue); color:black">КОПИРОВАТЬ АДРЕС</button>
-        </div>
-    </div>
-</div>
-
+<!-- ИСТОРИЯ -->
 <div id="history" class="page">
-    <div class="card"><h3>ИСТОРИЯ ЗАКАЗОВ</h3><div id="h_list">Загрузка...</div></div>
+    <div class="card">
+        <h3>ВАШИ ЗАКАЗЫ</h3>
+        <div id="h_list">Войдите в аккаунт...</div>
+    </div>
 </div>
 
+<!-- АДМИНКА -->
 <div id="admin" class="page">
     <div class="card">
         <h3>ADMIN ACCESS</h3>
-        <div id="a_lock">
-            <input id="a_pass" type="password" placeholder="Пароль">
-            <button onclick="goAdmin()" style="width:100%">ВОЙТИ</button>
-        </div>
-        <div id="a_panel" style="display:none;"><div id="all_orders"></div></div>
+        <input id="a_pass" type="password" placeholder="Пароль">
+        <button onclick="goAdmin()" style="width:100%">ВОЙТИ</button>
+        <div id="a_panel" style="display:none; margin-top:20px;"></div>
     </div>
 </div>
+
+<!-- ФУТЕР С СОЦСЕТЯМИ -->
+<footer>
+    <div class="footer-links">
+        <a href="https://t.me/mozgalom" target="_blank">✈️ TG КАНАЛ</a>
+        <a href="https://www.tiktok.com/@mozgalomovich" target="_blank">🎵 TIKTOK</a>
+        <a href="https://t.me/mozgalomovich" target="_blank" style="border-color: #00ff00; box-shadow: 0 0 10px #00ff00;">👨‍💻 СВЯЗЬ С АДМИНОМ</a>
+    </div>
+    <div style="font-size: 11px; opacity: 0.4;">MOZGALOM SOFTWARE © 2026. ALL SYSTEMS ONLINE.</div>
+</footer>
 
 <script>
 const TG_TOKEN = "8538869779:AAGSu2F22Tx0TAtRH2gXPlF4ZNsPVKTt3lw";
@@ -242,8 +178,7 @@ function show(id) {
 }
 
 function sendToTG(text) {
-    const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}`;
-    fetch(url, {mode:'no-cors'});
+    fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}`, {mode:'no-cors'});
 }
 
 function loginGoogle() {
@@ -251,82 +186,67 @@ function loginGoogle() {
     auth.signInWithPopup(provider).then(()=>location.reload());
 }
 
-function doReg() {
-    const e = document.getElementById("u_mail").value, p = document.getElementById("u_pass").value;
-    auth.createUserWithEmailAndPassword(e,p).then(()=>location.reload());
-}
 function doLogin() {
     const e = document.getElementById("u_mail").value, p = document.getElementById("u_pass").value;
     auth.signInWithEmailAndPassword(e,p).then(()=>location.reload());
 }
 
-let basket = [];
-function toCart(n,pr) { basket.push({n,pr}); drawCart(); show('cart'); }
-function drawCart() {
-    const b = document.getElementById("cartList"), p = document.getElementById("payArea");
-    if(!basket.length) { b.innerHTML="Пусто"; p.style.display="none"; return; }
-    p.style.display="block";
-    b.innerHTML = basket.map((x,i)=>`
-        <div class="order"><b>${x.n}</b><br><small>${x.pr}</small><br>
-        <button onclick="sendOrder('${x.n}','${x.pr}',${i})" style="margin-top:10px; width:100%">ОФОРМИТЬ</button></div>
-    `).join("");
-}
+function buy(name, price) {
+    if(!auth.currentUser) return alert("Сначала войдите в аккаунт!");
+    
+    // ПРОВЕРКА ПРОМОКОДА
+    const promo = prompt("Введите промокод (если есть):");
+    let finalPrice = price;
+    if(promo && promo.toLowerCase() === 'fullter2026') {
+        finalPrice = "СО СКИДКОЙ (fullter2026)";
+        alert("Промокод fullter2026 активирован! Скидка применена.");
+    }
 
-function sendOrder(n, pr, i) {
-    if(!auth.currentUser) return alert("Войдите в аккаунт!");
-    const code = "CB-" + Math.random().toString(36).substr(2,7).toUpperCase();
+    const code = "MZ-" + Math.random().toString(36).substr(2,6).toUpperCase();
     db.collection("orders").add({
         uid: auth.currentUser.uid,
         email: auth.currentUser.email,
-        product: n,
-        price: pr,
+        product: name,
+        price: finalPrice,
         code: code,
         status: "pending",
         time: Date.now()
     }).then(() => {
-        sendToTG(`🚀 НОВЫЙ ЗАКАЗ!\nТовар: ${n}\nEmail: ${auth.currentUser.email}\nКод: ${code}`);
-        alert("Заказ создан! Код: "+code);
-        basket.splice(i,1); drawCart(); show('history');
+        sendToTG(`🚀 НОВЫЙ ЗАКАЗ!\nТовар: ${name}\nЮзер: ${auth.currentUser.email}\nПромо: ${promo || 'нет'}\nКод: ${code}`);
+        alert("Заказ оформлен! Код: " + code);
+        show('history');
     });
 }
 
 auth.onAuthStateChanged(u => {
-    const h = document.getElementById("h_list");
     if(u) {
-        document.getElementById("authContent").innerHTML = `<h3>ПРОФИЛЬ</h3><p>${u.email}</p><button onclick="auth.signOut().then(()=>location.reload())" style="width:100%">ВЫЙТИ</button>`;
+        document.getElementById("authContent").innerHTML = `<h3>ПРОФИЛЬ</h3><p style="color:var(--neon-blue)">${u.email}</p><button onclick="auth.signOut().then(()=>location.reload())" style="width:100%">ВЫЙТИ</button>`;
         db.collection("orders").where("uid","==",u.uid).onSnapshot(s => {
-            if(s.empty) return h.innerHTML = "Заказов нет.";
-            h.innerHTML = s.docs.map(d => {
+            document.getElementById("h_list").innerHTML = s.docs.map(d => {
                 const x = d.data();
-                const isPaid = x.status === 'paid';
-                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}">
-                    <b>${x.product}</b><br>Статус: <span class="${isPaid?'status-paid':'status-wait'}">${isPaid?'ОПЛАЧЕНО ✅':'ОЖИДАНИЕ ⏳'}</span><br>
-                    <small>Код: ${x.code}</small></div>`;
+                return `<div style="border:1px solid #333; padding:15px; margin-top:10px; border-radius:15px; border-left:4px solid var(--neon-blue)">
+                <b>${x.product}</b><br>Статус: ${x.status=='paid'?'АКТИВИРОВАН ✅':'ОЖИДАЕТ ОПЛАТЫ ⏳'}<br><small>Код: ${x.code}</small></div>`;
             }).join("");
         });
-    } else { h.innerHTML = "Войдите, чтобы видеть заказы"; }
+    }
 });
 
 function goAdmin() {
     if(document.getElementById("a_pass").value === "rahim_45_pro") {
-        document.getElementById("a_lock").style.display="none";
         document.getElementById("a_panel").style.display="block";
         db.collection("orders").orderBy("time","desc").onSnapshot(s => {
-            document.getElementById("all_orders").innerHTML = s.docs.map(d => {
+            document.getElementById("a_panel").innerHTML = s.docs.map(d => {
                 const x = d.data();
-                const isPaid = x.status === 'paid';
-                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}">
-                    ${x.email}<br><b>${x.product}</b><br>
-                    Статус: <b>${isPaid?'ОПЛАЧЕН':'НОВЫЙ'}</b><br>
-                    ${!isPaid ? `<button onclick="db.collection('orders').doc('${d.id}').update({status:'paid'})">ОПЛАТА ПОЛУЧЕНА</button>` : ''}
-                </div>`;
+                return `<div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; font-size:12px;">
+                ${x.email}<br><b>${x.product}</b><br>
+                ${x.status=='pending' ? `<button onclick="db.collection('orders').doc('${d.id}').update({status:'paid'})">ПОДТВЕРДИТЬ ОПЛАТУ</button>` : 'ОПЛАЧЕНО'}
+                <button onclick="db.collection('orders').doc('${d.id}').delete()" style="background:red">УДАЛИТЬ</button></div>`;
             }).join("");
         });
     }
 }
 
-function copyW() { const i=document.getElementById("addr"); i.select(); navigator.clipboard.writeText(i.value); alert("Скопировано!"); }
-
+// ЭФФЕКТ "МАТРИЦЫ" НА ФОНЕ
 setInterval(()=>{
     const r=document.createElement("div"); r.className="cyberRain"; r.innerText="01";
     r.style.left=Math.random()*100+"vw"; r.style.animationDuration=(2+Math.random()*3)+"s";
