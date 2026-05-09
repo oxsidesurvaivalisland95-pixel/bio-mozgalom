@@ -25,9 +25,9 @@ input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px so
 .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:#00ffe5; color:#000; padding:10px 20px; border-radius:8px; font-weight:bold; z-index:1000; }
 .order { margin-top:10px; padding:12px; border:1px solid #333; border-left:3px solid #00ffe5; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; }
 .price-tag { font-size: 14px; color: #00ffe5; margin-bottom: 10px; display: block; font-weight: bold; }
-.order-date { font-size: 10px; color: #aaa; display: block; margin-top: 5px; }
 .status-wait { color: #ffae00; font-weight: bold; }
 .status-paid { color: #00ff00; font-weight: bold; }
+.order-date { font-size: 10px; color: #aaa; display: block; margin-top: 5px; }
 .cyberRain { position:fixed; top:-20px; color:#00ffe5; font-size:12px; pointer-events:none; z-index:-1; animation:fall linear forwards; }
 @keyframes fall { to { transform:translateY(110vh); opacity:0; } }
 </style>
@@ -85,15 +85,18 @@ input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px so
         <h3>КОРЗИНА</h3>
         <div id="cartList">Пусто</div>
         <div id="payArea" style="display:none; margin-top:15px; border-top:1px solid #333; padding-top:10px;">
-            <p style="font-size:12px; color:#00ffe5">Оплатите TON и оформите заказ:</p>
+            <p style="font-size:12px; color:#00ffe5">Оплатите по реквизитам и оформите заказ:</p>
             <input id="addr" value="UQAYHaet-WWovXy7HoH84ud8cz_VjENJAmuEySnVe9aiw2Dv" readonly>
-            <button onclick="copyW()" style="width:100%; margin-bottom:5px">КОПИРОВАТЬ АДРЕС</button>
+            <button onclick="copyW()" style="width:100%; margin-bottom:5px">КОПИРОВАТЬ TON АДРЕС</button>
         </div>
     </div>
 </div>
 
 <div id="history" class="page">
-    <div class="card"><h3>ИСТОРИЯ ЗАКАЗОВ</h3><div id="h_list">Загрузка...</div></div>
+    <div class="card">
+        <h3>ИСТОРИЯ ЗАКАЗОВ</h3>
+        <div id="h_list">Загрузка данных...</div>
+    </div>
 </div>
 
 <div id="admin" class="page">
@@ -108,10 +111,11 @@ input { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px so
 </div>
 
 <script>
-// ТВОИ ДАННЫЕ ТЕЛЕГРАМ
+// ТВОИ ДАННЫЕ TELEGRAM
 const TG_TOKEN = "8538869779:AAGSu2F22Tx0TAtRH2gXPlF4ZNsPVKTt3lw";
 const TG_CHAT_ID = "7910835075";
 
+// Конфигурация Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyD94vjwnRQIYC-2Le_nmxtsVKlU6Oww6VE",
     authDomain: "mozgalom-site.firebaseapp.com",
@@ -134,15 +138,16 @@ function msg(t) {
     document.body.appendChild(d); setTimeout(()=>d.remove(),2500); 
 }
 
-// Отправка уведомления в Telegram
+// Отправка в Telegram
 function sendToTG(text) {
     const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}`;
     fetch(url).catch(e => console.error("Ошибка TG:", e));
 }
 
+// АВТОРИЗАЦИЯ
 function loginGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).then(()=>location.reload()).catch(e=>alert("Ошибка входа через Google. Добавьте домен в консоли!"));
+    auth.signInWithPopup(provider).then(()=>location.reload()).catch(e=>alert("Ошибка: Убедитесь, что домен добавлен в Firebase Console!"));
 }
 
 function doReg() {
@@ -154,20 +159,23 @@ function doLogin() {
     auth.signInWithEmailAndPassword(e,p).then(()=>location.reload()).catch(()=>msg("Ошибка входа"));
 }
 
+// ЛОГИКА МАГАЗИНА
 let basket = [];
-function toCart(n,pr) { basket.push({n,pr}); msg("Добавлено"); drawCart(); }
+function toCart(n,pr) { basket.push({n,pr}); msg("Добавлено в корзину"); drawCart(); }
 function drawCart() {
     const b = document.getElementById("cartList"), p = document.getElementById("payArea");
     if(!basket.length) { b.innerHTML="Пусто"; p.style.display="none"; return; }
     p.style.display="block";
     b.innerHTML = basket.map((x,i)=>`
-        <div class="order"><b>${x.n}</b><br><small>${x.pr}</small><br>
-        <button onclick="sendOrder('${x.n}','${x.pr}',${i})" style="margin-top:8px; background:#00ffe5; color:#000;">ОФОРМИТЬ</button></div>
+        <div class="order">
+            <b>${x.n}</b><br><small>${x.pr}</small><br>
+            <button onclick="sendOrder('${x.n}','${x.pr}',${i})" style="margin-top:8px; background:#00ffe5; color:#000;">ОФОРМИТЬ ЗАКАЗ</button>
+        </div>
     `).join("");
 }
 
 function sendOrder(n, pr, i) {
-    if(!auth.currentUser) return msg("Войдите!");
+    if(!auth.currentUser) return msg("Сначала войдите в аккаунт!");
     const code = "CB-" + Math.random().toString(36).substr(2,7).toUpperCase();
     db.collection("orders").add({
         uid: auth.currentUser.uid,
@@ -178,39 +186,43 @@ function sendOrder(n, pr, i) {
         status: "pending",
         time: Date.now()
     }).then(() => {
-        // УВЕДОМЛЕНИЕ В ТВОЙ ТЕЛЕГРАМ
+        // УВЕДОМЛЕНИЕ В ТЕЛЕГРАМ ТЕБЕ
         const text = `🚀 НОВЫЙ ЗАКАЗ!\n\nТовар: ${n}\nЦена: ${pr}\nEmail: ${auth.currentUser.email}\nКод: ${code}`;
         sendToTG(text);
 
-        alert("Заказ создан! Код: "+code + "\nУведомление отправлено админу.");
+        alert("Заказ оформлен! Код: "+code);
         basket.splice(i,1); drawCart(); show('history');
     });
 }
 
+// МОНИТОРИНГ
 auth.onAuthStateChanged(u => {
     const h = document.getElementById("h_list");
     if(u) {
         document.getElementById("authContent").innerHTML = `<h3>АККАУНТ</h3><p>${u.email}</p><button onclick="auth.signOut().then(()=>location.reload())" style="width:100%">ВЫЙТИ</button>`;
         db.collection("orders").where("uid","==",u.uid).onSnapshot(s => {
-            if(s.empty) return h.innerHTML = "Заказов нет.";
+            if(s.empty) return h.innerHTML = "Заказов пока нет.";
             h.innerHTML = s.docs.map(d => {
                 const x = d.data();
                 const isPaid = x.status === 'paid';
-                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}" onclick="checkPaid('${x.status}', '${x.code}')">
-                    <b>${x.product}</b><br><small>${x.price}</small><br>
+                return `
+                <div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}" onclick="checkPaid('${x.status}', '${x.code}')">
+                    <b>${x.product}</b> (${x.price})<br>
                     <span class="order-date">${new Date(x.time).toLocaleString()}</span>
-                    Код: ${x.code}<br>
-                    Статус: <span class="${isPaid?'status-paid':'status-wait'}">${isPaid?'ОПЛАЧЕНО ✅':'ОЖИДАНИЕ ⏳'}</span></div>`;
+                    Код: <span style="color:#00ffe5">${x.code}</span><br>
+                    Статус: <span class="${isPaid?'status-paid':'status-wait'}">${isPaid?'ОПЛАЧЕНО ✅':'В ОЖИДАНИИ ⏳'}</span>
+                </div>`;
             }).join("");
         });
     } else { h.innerHTML = "Войдите в аккаунт"; }
 });
 
 function checkPaid(status, code) {
-    if(status === 'paid') alert("ОПЛАЧЕНО! Скиньте код @mozgalomovich: " + code);
-    else msg("Ждем оплаты");
+    if(status === 'paid') alert("ОПЛАЧЕНО! Код заказа: " + code);
+    else msg("Ожидайте подтверждения оплаты админом");
 }
 
+// АДМИНКА
 function goAdmin() {
     if(document.getElementById("a_pass").value === "rahim_45_pro") {
         document.getElementById("a_lock").style.display="none";
@@ -219,20 +231,22 @@ function goAdmin() {
             document.getElementById("all_orders").innerHTML = s.docs.map(d => {
                 const x = d.data();
                 const isPaid = x.status === 'paid';
-                return `<div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}; font-size:12px">
+                return `
+                <div class="order" style="border-color:${isPaid?'#0f0':'#ffae00'}; font-size:12px">
                     ${x.email}<br><b>${x.product}</b> [${x.price}]<br>
-                    Статус: <b style="color:${isPaid?'#0f0':'#ffae00'}">${isPaid?'ОПЛАЧЕН':'НОВЫЙ'}</b><br>
                     Код: <b>${x.code}</b><br>
+                    Статус: <b style="color:${isPaid?'#0f0':'#ffae00'}">${isPaid?'ОПЛАЧЕН':'НОВЫЙ'}</b><br>
                     ${!isPaid ? `<button onclick="db.collection('orders').doc('${d.id}').update({status:'paid'})">ПОДТВЕРДИТЬ</button>` : ''}
                     <button onclick="db.collection('orders').doc('${d.id}').delete()" style="background:red">УДАЛИТЬ</button>
                 </div>`;
             }).join("");
         });
-    } else msg("Пароль!");
+    } else msg("Неверный пароль!");
 }
 
 function copyW() { const i=document.getElementById("addr"); i.select(); navigator.clipboard.writeText(i.value); msg("Скопировано"); }
 
+// ФОН
 setInterval(()=>{
     const r=document.createElement("div"); r.className="cyberRain"; r.innerText="01";
     r.style.left=Math.random()*100+"vw"; r.style.animationDuration=(2+Math.random()*3)+"s";
