@@ -1,258 +1,64 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOZGALOM CYBER MARKET 2.0</title>
+    <meta charset="UTF-8">
+    <title>MOZGALOM 2026</title>
+    <style>
+        body { background: #05070d; color: white; font-family: sans-serif; text-align: center; margin: 0; padding-bottom: 100px; }
+        .neon-text { color: #00ffe5; text-shadow: 0 0 20px #00ffe5; text-transform: uppercase; margin-top: 50px; }
+        
+        /* Стили кнопок */
+        .btn { 
+            background: linear-gradient(45deg, #00ffe5, #ff00ff); 
+            border: none; padding: 15px 30px; color: white; border-radius: 10px; 
+            cursor: pointer; font-weight: bold; transition: 0.3s; margin: 10px;
+        }
+        .btn:active { transform: scale(0.9); box-shadow: 0 0 30px #00ffe5; }
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+        /* Карточки */
+        .card { 
+            background: rgba(255,255,255,0.05); border: 1px solid #00ffe5; 
+            display: inline-block; padding: 20px; border-radius: 20px; margin: 20px;
+        }
 
-<style>
-:root {
-    --neon-blue: #00ffe5;
-    --neon-purple: #ff00ff;
-    --dark-bg: #05070d;
-    --glass: rgba(255, 255, 255, 0.05);
-}
-
-body { 
-    margin:0; font-family: 'Lexend', sans-serif; background: var(--dark-bg); color:white; 
-    overflow-x:hidden; display: flex; flex-direction: column; min-height: 100vh;
-}
-
-/* ГЛАВНАЯ ШАПКА */
-.header { text-align:center; padding:50px 20px 20px; }
-.header h1 { 
-    margin:0; font-size:42px; color: var(--neon-blue); 
-    text-shadow: 0 0 20px var(--neon-blue); text-transform: uppercase; letter-spacing: 5px;
-}
-
-.nav { 
-    display:flex; justify-content:center; gap:10px; padding:15px; 
-    background: rgba(10, 15, 30, 0.9); position:sticky; top:0; z-index:100;
-    backdrop-filter: blur(15px); border-bottom: 1px solid var(--neon-blue);
-}
-
-button { 
-    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)); 
-    border: none; padding: 12px 24px; border-radius: 12px; 
-    color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5); text-transform: uppercase;
-}
-button:hover { transform: translateY(-3px); box-shadow: 0 0 25px var(--neon-blue); }
-button:active { transform: scale(0.95); }
-
-/* КОНТЕНТ */
-.page { display:none; padding:20px; flex: 1; animation: slideIn 0.4s ease; }
-@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.page.active { display:block; }
-
-.card { 
-    max-width:450px; margin:20px auto; padding:30px; 
-    background: var(--glass); border: 1px solid rgba(0, 255, 229, 0.2);
-    border-radius: 24px; backdrop-filter: blur(10px); position: relative;
-}
-
-.stock-tag {
-    position: absolute; top: 15px; right: 15px; background: rgba(255, 0, 0, 0.2);
-    color: #ff4444; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold;
-}
-
-input { 
-    width:100%; padding:15px; margin:10px 0; border-radius:12px; border:1px solid #333; 
-    background:rgba(0,0,0,0.6); color:white; font-size: 16px;
-}
-input:focus { border-color: var(--neon-purple); box-shadow: 0 0 15px var(--neon-purple); outline: none; }
-
-.price-tag { font-size: 24px; color: var(--neon-blue); font-weight: 900; margin: 15px 0; text-shadow: 0 0 10px var(--neon-blue); }
-
-/* ФУТЕР (Твои ссылки здесь) */
-footer {
-    background: rgba(0, 0, 0, 0.9); padding: 40px 20px; text-align: center;
-    border-top: 1px solid var(--neon-purple); margin-top: 50px;
-}
-.footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
-.footer-links a {
-    color: white; text-decoration: none; font-weight: bold; font-size: 14px;
-    padding: 12px 25px; border: 1px solid var(--neon-purple); border-radius: 50px;
-    transition: 0.3s; box-shadow: 0 0 10px var(--neon-purple);
-}
-.footer-links a:hover { background: var(--neon-purple); box-shadow: 0 0 30px var(--neon-purple); color: black; }
-
-/* ЭФФЕКТ МАТРИЦЫ */
-.cyberRain { position:fixed; top:-20px; color:var(--neon-blue); font-size:12px; pointer-events:none; z-index:-1; animation:fall linear forwards; opacity: 0.2; }
-@keyframes fall { to { transform:translateY(110vh); opacity:0; } }
-</style>
+        /* Твой подвал с ссылками */
+        footer { 
+            position: fixed; bottom: 0; width: 100%; 
+            background: rgba(0,0,0,0.9); padding: 20px 0; 
+            border-top: 2px solid #ff00ff; 
+        }
+        footer a { 
+            color: white; text-decoration: none; margin: 0 15px; 
+            padding: 10px 20px; border: 1px solid #ff00ff; border-radius: 50px;
+            box-shadow: 0 0 10px #ff00ff; transition: 0.3s;
+        }
+        footer a:hover { background: #ff00ff; box-shadow: 0 0 30px #ff00ff; }
+    </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>MOZGALOM</h1>
-    <div style="color:var(--neon-purple); letter-spacing: 3px;">SYSTEM UPGRADE 2.0</div>
-</div>
+    <h1 class="neon-text">MOZGALOM MARKET</h1>
 
-<div class="nav">
-    <button onclick="show('shop')">МАРКЕТ</button>
-    <button onclick="show('auth')">ПРОФИЛЬ</button>
-    <button onclick="show('history')">ЗАКАЗЫ</button>
-    <button onclick="show('admin')" style="background:none; border:1px solid var(--neon-purple); color:var(--neon-purple)">ADMIN</button>
-</div>
-
-<!-- ТОВАРЫ -->
-<div id="shop" class="page active">
     <div class="card">
-        <div class="stock-tag">ОСТАЛОСЬ: 4 ШТ.</div>
-        <h3>1 НЕДЕЛЯ (LITE)</h3>
-        <div class="price-tag">300₽ / 2 TON</div>
-        <button onclick="buy('1 НЕДЕЛЯ','300₽')" style="width:100%">КУПИТЬ</button>
+        <h3>1 НЕДЕЛЯ</h3>
+        <p>Цена: 300₽</p>
+        <button class="btn" onclick="buy()">КУПИТЬ</button>
     </div>
-    <div class="card">
-        <div class="stock-tag">ОСТАЛОСЬ: 2 ШТ.</div>
-        <h3>1 МЕСЯЦ (PRO)</h3>
-        <div class="price-tag">1000₽ / 6 TON</div>
-        <button onclick="buy('1 МЕСЯЦ','1000₽')" style="width:100%">КУПИТЬ</button>
-    </div>
-</div>
 
-<!-- ПРОФИЛЬ -->
-<div id="auth" class="page">
-    <div class="card" id="authContent">
-        <h3>ВХОД В СИСТЕМУ</h3>
-        <input id="u_mail" type="email" placeholder="Email">
-        <input id="u_pass" type="password" placeholder="Пароль">
-        <button onclick="doLogin()" style="width:100%">ВОЙТИ</button>
-        <button onclick="loginGoogle()" style="width:100%; margin-top:15px; background:white; color:black">GOOGLE LOGIN</button>
-    </div>
-</div>
+    <footer>
+        <a href="https://t.me/mozgalom" target="_blank">✈️ ТЕЛЕГРАМ</a>
+        <a href="https://www.tiktok.com/@mozgalomovich" target="_blank">🎵 ТИКТОК</a>
+    </footer>
 
-<!-- ИСТОРИЯ -->
-<div id="history" class="page">
-    <div class="card">
-        <h3>ВАШИ ЗАКАЗЫ</h3>
-        <div id="h_list">Войдите в аккаунт...</div>
-    </div>
-</div>
-
-<!-- АДМИНКА -->
-<div id="admin" class="page">
-    <div class="card">
-        <h3>ADMIN ACCESS</h3>
-        <input id="a_pass" type="password" placeholder="Пароль">
-        <button onclick="goAdmin()" style="width:100%">ВОЙТИ</button>
-        <div id="a_panel" style="display:none; margin-top:20px;"></div>
-    </div>
-</div>
-
-<!-- ФУТЕР С СОЦСЕТЯМИ -->
-<footer>
-    <div class="footer-links">
-        <a href="https://t.me/mozgalom" target="_blank">✈️ TG КАНАЛ</a>
-        <a href="https://www.tiktok.com/@mozgalomovich" target="_blank">🎵 TIKTOK</a>
-        <a href="https://t.me/mozgalomovich" target="_blank" style="border-color: #00ff00; box-shadow: 0 0 10px #00ff00;">👨‍💻 СВЯЗЬ С АДМИНОМ</a>
-    </div>
-    <div style="font-size: 11px; opacity: 0.4;">MOZGALOM SOFTWARE © 2026. ALL SYSTEMS ONLINE.</div>
-</footer>
-
-<script>
-const TG_TOKEN = "8538869779:AAGSu2F22Tx0TAtRH2gXPlF4ZNsPVKTt3lw";
-const TG_CHAT_ID = "7910835075";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyD94vjwnRQIYC-2Le_nmxtsVKlU6Oww6VE",
-    authDomain: "mozgalom-site.firebaseapp.com",
-    projectId: "mozgalom-site",
-    storageBucket: "mozgalom-site.appspot.com",
-    appId: "1:564649897907:web:61503121e661fb6a82a5c6"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-function show(id) { 
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); 
-    document.getElementById(id).classList.add('active'); 
-}
-
-function sendToTG(text) {
-    fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}`, {mode:'no-cors'});
-}
-
-function loginGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).then(()=>location.reload());
-}
-
-function doLogin() {
-    const e = document.getElementById("u_mail").value, p = document.getElementById("u_pass").value;
-    auth.signInWithEmailAndPassword(e,p).then(()=>location.reload());
-}
-
-function buy(name, price) {
-    if(!auth.currentUser) return alert("Сначала войдите в аккаунт!");
-    
-    // ПРОВЕРКА ПРОМОКОДА
-    const promo = prompt("Введите промокод (если есть):");
-    let finalPrice = price;
-    if(promo && promo.toLowerCase() === 'fullter2026') {
-        finalPrice = "СО СКИДКОЙ (fullter2026)";
-        alert("Промокод fullter2026 активирован! Скидка применена.");
-    }
-
-    const code = "MZ-" + Math.random().toString(36).substr(2,6).toUpperCase();
-    db.collection("orders").add({
-        uid: auth.currentUser.uid,
-        email: auth.currentUser.email,
-        product: name,
-        price: finalPrice,
-        code: code,
-        status: "pending",
-        time: Date.now()
-    }).then(() => {
-        sendToTG(`🚀 НОВЫЙ ЗАКАЗ!\nТовар: ${name}\nЮзер: ${auth.currentUser.email}\nПромо: ${promo || 'нет'}\nКод: ${code}`);
-        alert("Заказ оформлен! Код: " + code);
-        show('history');
-    });
-}
-
-auth.onAuthStateChanged(u => {
-    if(u) {
-        document.getElementById("authContent").innerHTML = `<h3>ПРОФИЛЬ</h3><p style="color:var(--neon-blue)">${u.email}</p><button onclick="auth.signOut().then(()=>location.reload())" style="width:100%">ВЫЙТИ</button>`;
-        db.collection("orders").where("uid","==",u.uid).onSnapshot(s => {
-            document.getElementById("h_list").innerHTML = s.docs.map(d => {
-                const x = d.data();
-                return `<div style="border:1px solid #333; padding:15px; margin-top:10px; border-radius:15px; border-left:4px solid var(--neon-blue)">
-                <b>${x.product}</b><br>Статус: ${x.status=='paid'?'АКТИВИРОВАН ✅':'ОЖИДАЕТ ОПЛАТЫ ⏳'}<br><small>Код: ${x.code}</small></div>`;
-            }).join("");
-        });
-    }
-});
-
-function goAdmin() {
-    if(document.getElementById("a_pass").value === "rahim_45_pro") {
-        document.getElementById("a_panel").style.display="block";
-        db.collection("orders").orderBy("time","desc").onSnapshot(s => {
-            document.getElementById("a_panel").innerHTML = s.docs.map(d => {
-                const x = d.data();
-                return `<div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; font-size:12px;">
-                ${x.email}<br><b>${x.product}</b><br>
-                ${x.status=='pending' ? `<button onclick="db.collection('orders').doc('${d.id}').update({status:'paid'})">ПОДТВЕРДИТЬ ОПЛАТУ</button>` : 'ОПЛАЧЕНО'}
-                <button onclick="db.collection('orders').doc('${d.id}').delete()" style="background:red">УДАЛИТЬ</button></div>`;
-            }).join("");
-        });
-    }
-}
-
-// ЭФФЕКТ "МАТРИЦЫ" НА ФОНЕ
-setInterval(()=>{
-    const r=document.createElement("div"); r.className="cyberRain"; r.innerText="01";
-    r.style.left=Math.random()*100+"vw"; r.style.animationDuration=(2+Math.random()*3)+"s";
-    document.body.appendChild(r); setTimeout(()=>r.remove(),4000);
-},200);
-</script>
+    <script>
+        function buy() {
+            let promo = prompt("Введите промокод:");
+            if (promo === "fullter2026") {
+                alert("СКИДКА АКТИВИРОВАНА! Цена снижена.");
+            } else {
+                alert("Заказ оформлен без скидки.");
+            }
+        }
+    </script>
 </body>
 </html>
